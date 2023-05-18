@@ -1,0 +1,453 @@
+# Ссылка с моим времением
+base_url = "eyJjaXR5Ijp7ImNpdHkiOiJcdTA0MmRcdTA0M2JcdTA0M2EiLCJjaXR5aWQiOiI4MDM1NyIsInV0YyI6IisxLjAiLCJzdXRjIjoxLCJsbmciOiIyMi4zNjQ2NjI5IiwibGF0IjoiNTMuODI4MDUyOSIsInR6IjoiRXVyb3BlXC9XYXJzYXciLCJnb29nbGVfaWQiOiJDaElKQi1OaE4zLTU0VVlSWWtHQ0ZHb0dRVk0iLCJnZW9uYW1laWQiOiI3NzI2MjEiLCJ1YXV0byI6MX0sInBybyI6IjAiLCJIb3Vyc1R5cGUiOiIwIn0="
+
+Тут будет предварительный перевод :)
+
+help - Get advice on how to operate the robot properly
+today - Show the forecast for today
+
+Based on the Chinese or Tibetan calendar, this robot delivers energy forecasts for a specific time frame.
+
+== Работа со строками ==
+    list1 = list(dict.fromkeys(params))
+    stars = [s.replace('\xa0', ' ').strip().replace('\n', '') for s in list1 if s.strip()]
+
+    message_text1 = '\n'.join(f"{el}" if el != stars[-1] else f"<b>{el}</b>" for el in stars)
+    message_text = '\n'.join(f"{el}" if el not in [stars[-1], stars[0]] else f"   <i>{el}</i>" for el in stars)
+
+Проверка на содержание строки :
+s = "Привет"
+if s.isalpha():
+    print("Yes")
+else:
+    print("No")
+
+
+Создание класса с выполнением и получением по заданным праметрам :
+
+Вы можете описать вашу функцию как метод внутри класса и использовать аргументы метода для определения того,
+какие параметры нужны в данный момент.
+
+Например, вы можете создать класс MyClass, который содержит метод get_params(), который возвращает все 5 параметров,
+и опциональный аргумент params_needed, который принимает список идентификаторов параметров, которые нужны
+в данный момент. Затем вы можете проверить значение аргумента params_needed и вернуть только необходимые параметры.
+
+Вот пример кода:
+class MyClass:
+    def get_params(self, params_needed=None):
+        # Здесь должен быть ваш код, который возвращает 5 параметров
+        # Если params_needed не указан, то возвращаем все параметры
+        if params_needed is None:
+            return param1, param2, param3, param4, param5
+        else:
+            # Возвращаем только запрошенные параметры
+            params = []
+            if 'param1' in params_needed:
+                params.append(param1)
+            if 'param2' in params_needed:
+                params.append(param2)
+            if 'param3' in params_needed:
+                params.append(param3)
+            if 'param4' in params_needed:
+                params.append(param4)
+            if 'param5' in params_needed:
+                params.append(param5)
+            return tuple(params)
+
+Вы можете вызывать метод get_params() с аргументом params_needed, чтобы получить только необходимые параметры. Например:
+
+my_object = MyClass()
+
+# Получить все 5 параметров
+params = my_object.get_params()
+print(params)
+
+# Получить только параметры param1 и param3
+params = my_object.get_params(params_needed=['param1', 'param3'])
+print(params)
+
+# Получить только параметр param5
+params = my_object.get_params(params_needed=['param5'])
+print(params)
+
+В результате выполнения кода выше вы получите только запрошенные параметры.
+
+        # ============================================ Описание для часа на день ======================================================
+        try:
+            if datetime.datetime.now().time() >= datetime.time(22,31) and datetime.datetime.now().time() <= datetime.time(23, 59):
+                dhour = soup.find('div', class_='Content').findAll('td')[-1].text
+            elif datetime.datetime.now().time() >= datetime.time(20,31) and datetime.datetime.now().time() <= datetime.time(22, 30):
+                dhour = soup.find('div', class_='Content').findAll('td')[-2].text
+            elif datetime.datetime.now().time() >= datetime.time(18,31) and datetime.datetime.now().time() <= datetime.time(20, 30):
+                dhour = soup.find('div', class_='Content').findAll('td')[-3].text
+            elif datetime.datetime.now().time() >= datetime.time(16,31) and datetime.datetime.now().time() <= datetime.time(18, 30):
+                dhour = soup.find('div', class_='Content').findAll('td')[-4].text
+            elif datetime.datetime.now().time() >= datetime.time(14,31) and datetime.datetime.now().time() <= datetime.time(16, 30):
+                dhour = soup.find('div', class_='Content').findAll('td')[-5].text
+            elif datetime.datetime.now().time() >= datetime.time(12,31) and datetime.datetime.now().time() <= datetime.time(14, 30):
+                dhour = soup.find('div', class_='Content').findAll('td')[-6].text
+            elif datetime.datetime.now().time() >= datetime.time(10,31) and datetime.datetime.now().time() <= datetime.time(12, 30):
+                dhour = soup.find('div', class_='Content').findAll('td')[-7].text
+            elif datetime.datetime.now().time() >= datetime.time(8,31) and datetime.datetime.now().time() <= datetime.time(10, 30):
+                dhour = soup.find('div', class_='Content').findAll('td')[-8].text
+            elif datetime.datetime.now().time() >= datetime.time(6,31) and datetime.datetime.now().time() <= datetime.time(8, 30):
+                dhour = soup.find('div', class_='Content').findAll('td')[-9].text
+            elif datetime.datetime.now().time() >= datetime.time(4,31) and datetime.datetime.now().time() <= datetime.time(6, 30):
+                dhour = soup.find('div', class_='Content').findAll('td')[-10].text
+            elif datetime.datetime.now().time() >= datetime.time(2,31) and datetime.datetime.now().time() <= datetime.time(4, 30):
+                dhour = soup.find('div', class_='Content').findAll('td')[-11].text
+            elif datetime.datetime.now().time() >= datetime.time(0,31) and datetime.datetime.now().time() <= datetime.time(2, 30):
+                dhour = soup.find('div', class_='Content').findAll('td')[-12].text
+            elif datetime.datetime.now().time() >= datetime.time(0,00) and datetime.datetime.now().time() <= datetime.time(0, 30):
+                dhour = soup.find('div', class_='Content').findAll('td')[-13].text
+        except:
+            dhour = ''
+        # ================================================================================================================================
+
+
+
+                                            if collision1: f"- {collision1.strip()}"
+                                            if collision1: f"- {collision1o}"
+                                            if collision2: f"- {collision2.strip()}"
+                                            if collision2o and collision2 and collision2o != sha1o: f"- {collision2o}"
+                                            if sha1: f"- {sha1.strip()}"
+                                           =if sha1o.strip() and not sha2: f"- {sha1o.strip()}"
+                                            if sha2: f"- {sha2}"
+                                            if not sha1o.strip() and sha2o.strip() : f"- {sha2o.strip()}"
+                                            if sha2o and sha2 and sha2o.strip() == sha1o.strip(): f"- {sha2o.strip()}"
+                                            if positive1: f"- {positive1}"
+                                            if positive1o and positive1 and positive1o[:-1] != negativeo: f"- {positive1o}"
+                                            if positive2: f"- {positive2}"
+                                            if positive2o: f"- {positive2o}"
+                                            if symbolMKD: f"- {symbolMKD}"
+                                            if negative: f"- {negative}"
+                                            if negativeo: f"- {negativeo}"
+                                            if not negativeo and negative: f"- {collision1o}"
+
+  @bot.message_handler(commands=['moon'])
+    def moonday(message):
+    my_object = Parsi()
+    params = my_object.pfind(params_needed=['moonday'])
+    bot.send_message(message.chat.id,f'{params}', parse_mode='html')
+
+
+     ===================== Метод, который все функции в scheduler ===================
+     def run_all_functions():
+        Hours()
+        Minutes()
+        Seconds()
+
+    scheduler.add_job(run_all_functions, 'cron', hour=7, minute=10)
+    ====================================================================================
+
+    https://github.com/PashkaI/OrakulumBot.git
+    ---------------------------------------------------
+    echo "# OrakulumBot" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/PashkaI/OrakulumBot.git
+git push -u origin main
+-------------------------------------------------------------------
+git remote add origin https://github.com/PashkaI/OrakulumBot.git
+git branch -M main
+git push -u origin main
+
+==================== Функция, которая возвращает актуальную дату ====================
+Проблема заключается в том, что переменная today инициализируется один раз при запуске скрипта,
+и после этого не обновляется. Для того, чтобы получать каждый раз актуальную дату, можно воспользоваться
+функцией, которая будет возвращать сегодняшнюю дату в нужном формате при каждом вызове.
+
+Например, можно определить функцию get_today(), которая будет возвращать сегодняшнюю дату при каждом вызове:
+import datetime
+
+def get_today():
+    return datetime.date.today()
+Теперь, чтобы получить сегодняшнюю дату, можно вызвать функцию get_today()
+today = get_today()
+====================================================================================
+====================================================================================
+await message.answer(               f'\n  🌓 <b> Лунный прогноз на день </b>'
+                                        f'\n  --------------------------------'
+                                        f'\n   {moon}'
+                          ,reply_markup=markup, parse_mode='html')
+==========================================  Python и Flask ===========================
+
+========================================================================================
+#============================ Вывод запроса на дату =========================
+@dp.message_handler(content_types=['text'])
+async def fordate(message):
+    waitfor = await bot.send_message(message.chat.id, 'Ожидайте загрузки ... ⌛️')
+    date_str = message.text.strip().lower()
+    try:
+        date_obj = datetime.datetime.strptime(date_str, '%d-%m-%Y')
+    except ValueError:
+        await bot.edit_message_text(text=f'Дата указана не верно',chat_id=waitfor.chat.id, message_id=waitfor.message_id)
+        return
+    content = StarsDay(date_str)  # Запрос на выгрузку контента согласно введённой дате
+    content_tibet = TibetHolly(date_str)  # Запрос на выгрузку контента согласно введённой дате
+
+    # moon = content.find('div', class_='firstInfo').find('div', class_='MoonDay') \
+    #            .find_all(string=lambda text: isinstance(text, Comment))[1].split('DNone">')[1][:-13]
+    try:
+        DSymbol = content.find('h5', class_='CzjanChu').text
+    except:
+        DSymbol = ''
+    try:
+        DSymbolo = content.find('p', class_='CzjanChu').text
+    except:
+        DSymbolo = ''
+    try:
+        DayPlus = content.find('p', class_='PlusMinus').text
+    except:
+        DayPlus = ''
+    try:
+        DayMinus = content.findAll('p', class_='PlusMinus')[1].text
+    except:
+        DayMinus = ''
+    try:
+        DMoon = content.find('div', class_='MoonDay').text
+    except:
+        DMoon = ''
+
+    # ================================== Звёзды ===========================================
+
+    content = content.find('div', class_='firstInfo')
+    try:  # Разрушитель года или месяца (Надо подставить слово "Разрушитель")
+        collision1 = content.find('h5', class_='red Collision').text  # .split()[-1]
+    except:
+        collision1 = ''
+    try:  # Описание для Разрушителя.
+        collision1o = content.findAll('p')[4].text
+    except:
+        collision1o = ''
+    try:  # Второй Разрушитель, если есть первый года или месяца (Надо подставить слово "Разрушитель")
+        collision2 = content.findAll('h5', class_='red Collision')[1].text  # .split()[-1]
+    except:
+        collision2 = ''
+    try:  # Описание для Разрушителя.
+        collision2o = content.findAll('p')[5].text
+    except:
+        collision2o = ''
+    try:  # Красное ША года
+        sha1 = content.find('h5', class_='red Sha').text
+    except:
+        sha1 = ''
+    try:  # Описание для ША
+        sha1o = content.find('p', class_='Sha').text
+    except:
+        sha1o = ''
+    try:  # Красное второе ША года
+        sha2 = content.findAll('h5', class_='red Sha')[1].text
+    except:
+        sha2 = ''
+    try:  # Описание для ША
+        sha2o = content.findAll('p', class_='Sha')[1].text
+    except:
+        sha2o = ''
+    try:  # Позитивный символ для Звезды
+        positive1 = content.find('h5', class_='positive SymbolStars').text  # оставить
+    except:
+        positive1 = ''
+    try:  # Описание позитивного символа
+        positive1o = content.find('p', class_='SymbolStars').text
+    except:
+        positive1o = ''
+    try:  # Позитивный второй символ для Звезды
+        positive2 = content.findAll('h5', class_='positive SymbolStars')[1].text
+    except:
+        positive2 = ''
+    try:  # Описание второго позитивного символа
+        positive2o = content.findAll('p', class_='SymbolStars')[2].text
+    except:
+        positive2o = ''
+    try:  # Символ MKD
+        symbolMKD = content.find('div', class_='SymbolStars MKD').text
+    except:
+        symbolMKD = ''
+    try:  # Негативный символ для Звезды
+        negative = content.find('h5', class_='negative SymbolStars').text
+    except:
+        negative = ''
+    try:  # Описание негативного символа
+        negativeo = content.findAll('p', class_='SymbolStars')[1].text
+    except:
+        negativeo = ''
+
+    stars = collision1.strip() + collision1o + collision2.strip() + collision2o + sha1 + sha1o.strip() + sha2 + sha2o.strip() \
+            + positive1 + positive1o + positive2 + positive2o + symbolMKD + negative + negativeo
+
+    if collision1: collision1 = '\n ⛔️ - ' + collision1.strip()
+    if collision1o: collision1o = '\n' + collision1o
+    if collision2: collision2 = '\n ⛔️ - ' + collision2.strip()
+    if collision2o: collision2o = '\n' + collision2o
+    if sha1: sha1 = '\n ⛔️ - ' + sha1.strip()
+    if sha1o: sha1o = '\n' + sha1o.strip()
+    if sha2: sha2 = '\n ⛔️ - ' + sha2
+    if sha2o: sha2o = '\n' + sha2o.strip()
+    if positive1: positive1 = '\n ✅ - ' + positive1
+    if positive1o: positive1o = '\n' + positive1o
+    if positive2: positive2 = '\n ✅ - ' + positive2
+    if positive2o: positive2o = '\n' + positive2o
+    if symbolMKD: symbolMKD = '\n 🀄️ - ' + symbolMKD
+    if negative: negative = '\n ⛔️ - ' + negative
+    if negativeo: negativeo = '\n' + negativeo
+
+    # ================================== Информация по Тибету ===========================================
+
+    start = content_tibet.find("праздники") + len("праздники")
+    end = content_tibet.find("Главная")
+    holiday = content_tibet[start:end]
+
+    if ".Последствия" in content_tibet: content_tibet = content_tibet.replace('.Последствия', ' Последствия')
+    if ".Поездка" in content_tibet: content_tibet = content_tibet.replace('.Поездка', ' Поездка')
+    if ".Последствия поездки:" in content_tibet: content_tibet = content_tibet.replace('.Последствия поездки:', ' Последствия поездки:')
+
+    start = content_tibet.find("Последствия стрижки")  # -- Стрижка --
+    end = content_tibet.find("Последствия мытья")
+    item1 = content_tibet[start:end]
+
+    start1 = content_tibet.find("Последствия стрижки")
+    end1 = content_tibet.find(".Местонахождение")
+    item2 = content_tibet[start1:end1]
+    item2 = item2.replace('.Поездка', ' Поездка')
+
+    start2 = content_tibet.find("Последствия мытья")  # -- Мытьё --
+    end2 = content_tibet.find("Последствия стрижки")
+    item3 = content_tibet[start2:end2]
+
+    start3 = content_tibet.find("Последствия мытья")
+    end3 = content_tibet.find(".Местонахождение")
+    item4 = content_tibet[start3:end3]
+    item4 = item4.replace('.Поездка', ' Поездка')
+
+    start4 = content_tibet.find("Последствия поездки:")  # -- Поездка --
+    end4 = content_tibet.find(".Местонахождение")
+    item5 = content_tibet[start4:end4]
+
+    start5 = content_tibet.find("Поездка")
+    end5 = content_tibet.find("Последствия стрижки")
+    item6 = content_tibet[start5:end5]
+
+    start6 = content_tibet.find("Поездка")
+    end6 = content_tibet.find("Последствия мытья")
+    item7 = content_tibet[start6:end6]
+
+    start7 = content_tibet.find("Поездка")
+    end7 = content_tibet.find(".Местонахождение")
+    item8 = content_tibet[start7:end7]
+
+    start8 = content_tibet.find("Последствия поездки:")
+    end8 = content_tibet.find("Последствия стрижки")
+    item9 = content_tibet[start8:end8]
+
+    start9 = content_tibet.find("Последствия поездки:")
+    end9 = content_tibet.find("Последствия мытья")
+    item10 = content_tibet[start9:end9]
+
+    result1 = ''
+    result2 = ''
+    result3 = ''
+    # ===============  Запрос для стрижки ======================
+    if "стрижки" in item1 and "Поездка" not in item1 and "поездки:" not in item1:
+        idx_sub_start = item1.find("Последствия стрижки")
+        idx_sub_end = item1.find("Последствия мытья")
+        result1 = item1[idx_sub_start:idx_sub_end]
+    elif "Поездка" not in item2 and "поездки:" not in item2:
+        result1 = item2
+    elif "Поездка" in item2:
+        idx_sub_start = item2.find("Последствия стрижки")
+        idx_sub_end = item2.find("Поездка")
+        result1 = item2[idx_sub_start:idx_sub_end]
+    elif "поездки:" in item2:
+        idx_sub_start = item2.find("Последствия стрижки")
+        idx_sub_end = item2.find("Последствия поездки:")
+        result1 = item2[idx_sub_start:idx_sub_end]
+
+    # ===============  Запрос для мытья ======================
+    if "мытья" in item3:
+        idx_sub_start = item3.find("Последствия мытья")
+        idx_sub_end = item3.find("Последствия стрижки")
+        result2 = item3[idx_sub_start:idx_sub_end]
+    elif "Поездка" not in item4 and "поездки:" not in item4:
+        result2 = item4
+    elif "Поездка" in item4:
+        idx_sub_start = item4.find("Последствия мытья")
+        idx_sub_end = item4.find("Поездка")
+        result2 = item4[idx_sub_start:idx_sub_end]
+    elif "поездки:" in item4:
+        idx_sub_start = item4.find("Последствия мытья")
+        idx_sub_end = item4.find("Последствия поездки:")
+        result2 = item4[idx_sub_start:idx_sub_end]
+
+
+    # ===============  Поездка ======================
+    if "Последствия поездки:" in item5 and "мытья" not in item5 and "стрижки" not in item5:
+        result3 = item5
+    elif "Поездка" in item6 and "мытья" not in item6 and "стрижки" not in item6:
+        result3 = item6
+    elif "Поездка" in item7 and "мытья" not in item7 and "стрижки" not in item7:
+        result3 = item7
+    elif "Поездка" in item8 and "мытья" not in item8 and "стрижки" not in item8:
+        result3 = item8
+    elif "Последствия поездки:" in item9 and "мытья" not in item9 and "стрижки" not in item9:
+        result3 = item9
+    elif "Последствия поездки:" in item10 and "мытья" not in item10 and "стрижки" not in item10:
+        result3 = item10
+
+    # ================================== Конец блока по Тибету ===========================================
+
+    await bot.edit_message_text(text=f'\n 🗓  <b>Запрос на дату :   {date_str}</b>'
+                                     f'\n-------------------------------'
+                                     f'\n  - <b><u> {DSymbol}</u></b>'
+                                     f'\n   -  {DSymbolo}'
+                                     f'\n -------------------------------------'
+                                     f'\n  ✅ -  {DayPlus}'
+                                     f'\n  ⛔️ -  {DayMinus}'
+                                     f'\n -------------------------------------'
+                                     f'\n{str(DMoon).strip()}'
+                                , chat_id=waitfor.chat.id, message_id=waitfor.message_id, parse_mode='html')
+
+    if not stars:
+        await message.answer(f'\n ⭐️<b><u> Cимволы дня и летящие звёзды </u></b>'
+                             f'\n---------------------------------------'
+                             f'\n Сегодня нет информации'
+                             , parse_mode='html')
+    else:
+        await message.answer(
+            f'\n ⭐️<b> Cимволы дня и летящие звёзды </b>'
+            f'\n---------------------------------------'
+            f' {f"<b>{collision1}</b>" if collision1 else ""}'
+            f' {f"{collision1o}" if collision1 else ""}'
+            f' {f"<b>{collision2}</b>" if collision2 else ""}'
+            f' {f"{collision2o}" if collision2o and collision2 and collision2o != sha1o else ""}'
+            f' {f"<b>{sha1}</b>" if sha1 else ""}'
+            f' {f"{sha1o}" if sha1o and not sha2 else ""}'
+            f' {f"<b>{sha2}</b>" if sha2 else ""}'
+            f' {f"{sha2o}" if not sha1o and sha2o else ""}'
+            f' {f"{sha2o}" if sha2o and sha2 and sha2o == sha1o else ""}'
+            f' {f"<b>{positive1}</b>" if positive1 else ""}'
+            f' {f"{positive1o}" if positive1o and positive1 and positive1o[:-1] != negativeo else ""}'
+            f' {f"<b>{positive2}</b>" if positive2 else ""}'
+            f' {f"{positive2o}" if positive2o else ""}'
+            f' {f"<b>{symbolMKD}</b>" if symbolMKD else ""}'
+            f' {f"<b>{negative}</b>" if negative else ""}'
+            f' {f"{negativeo}" if negativeo else ""}'
+            f' {f"{collision1o}" if not negativeo and negative else ""}'
+            , parse_mode='html')
+
+    await message.answer(f'\n  ⛩  <b> Тибетские прогнозы </b>'
+                         f'\n  --------------------------------'
+                         f'\n  🙏  {holiday}'
+                         f'\n  --------------------------------'
+                         f'\n  ✂️  {result1}'
+                         f'\n  --------------------------------'
+                         f'\n  🚿  {result2}'
+                         f'\n  --------------------------------'
+                         f'\n  🛺  {result3}'
+                         , parse_mode='html')
+
+
+
+
