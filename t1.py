@@ -58,7 +58,7 @@ def GetContent():
         # Обработка ошибки
         print('Ошибка при выполнении запроса')
 
-GetContent()
+#GetContent()
 # scheduler.add_job(GetContent, 'cron', hour=14, minute=31, second=10)
 #
 # scheduler.start()
@@ -87,7 +87,7 @@ async def main(message):
     cur.execute("SELECT * FROM users WHERE name=? AND pass=?", (name, nameid))
     existing_record = cur.fetchone()
     if existing_record:
-        await message.answer( "I welcome you again")
+        await message.answer( "Welcome you again")
     else:
         cur.execute("INSERT INTO users (name, pass, utc) VALUES (?, ?, ?)", (name, nameid, 1))
         conn.commit()
@@ -96,7 +96,8 @@ async def main(message):
     conn.close()
     await message.answer(               f'  Hello, <b>{name}!</b> '
                                         f'\nWelcome to the Algo - Parents Bot'
-                                        f'\nPlease enter the student ID'
+                                        f'\nPlease enter the <b>student ID</b>'
+                                        f'\nAnd choose your <b>language</b>'
                                         ,parse_mode='html')
 
 @dp.message_handler(commands=['get_users'])
@@ -156,7 +157,6 @@ async def maintest(message, nameid=None):
             break  # Прерываем цикл, так как данные для User найдены
 
     print("Имя:", name)
-    print(bill)
     await message.answer(
         f'<b><u>Basic information about the student :</u></b>'
         f'\nName -  {name}'
@@ -188,6 +188,9 @@ async def maintest(message, nameid=None):
     field4 = ''
     field5 = ''
 
+    # Создаем пустой список для сохранения найденных строк
+    matching_values = []
+
     # Проходим по каждой строке, начиная со второй (пропускаем заголовок)
     for row in rows[1:]:
         # Извлекаем значения ячеек (td) из текущей строки
@@ -201,18 +204,32 @@ async def maintest(message, nameid=None):
             field3 = cells[3].text
             field4 = cells[4].text
             field5 = int(cells[5].text)
-            break  # Прерываем цикл, так как данные для User найдены
+
+            # Добавляем найденные значения в список
+            matching_values.append([field1, field2, field3, field4, field5])
 
     print("Имя:", field4)
-    await message.answer(
-        f'<b><u>Basic information about the student :</u></b>'
-        f'\nName -  {field1}'
-        f'\nLessons passed in group: -  {field2}'
-        f'\nGroup start: -  {field3}'
-        #f'\nGroup type: -  {group_type}'
-        #f'\nStudent status in the group: -  {student_status}'
-        f'\nAttended lessons: -  {field5}'
-        ,parse_mode='html')
+    await message.answer('<b><u>Basic information about the student :</u></b>', parse_mode='html')
+
+    # Создаем переменную для объединения сообщения
+    output_message = '<b><u>Basic information about the student :</u></b>'
+
+    # Выводим найденные значения
+    for values in matching_values:
+        field1, field2, field3, field4, field5 = values
+
+        output_message += (
+            f'\nName -  {field1}'
+            f'\nLessons passed in group: -  {field2}'
+            f'\nGroup start: -  {field3}'
+            # f'\nGroup type: -  {group_type}'
+            # f'\nStudent status in the group: -  {student_status}'
+            f'\nAttended lessons: -  {field5}'
+        )
+
+    # Отправляем одно сообщение с объединенными значениями
+    await message.answer(output_message, parse_mode='html')
+
 
 #============================ Запись запроса в базу по номеру =========================
 @dp.message_handler(content_types=['text'])
