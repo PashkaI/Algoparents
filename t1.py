@@ -58,12 +58,12 @@ def GetContent():
         # Обработка ошибки
         print('Ошибка при выполнении запроса')
 
-#GetContent()
+GetContent()
 # scheduler.add_job(GetContent, 'cron', hour=14, minute=31, second=10)
 #
 # scheduler.start()
 
-# =================== Определяем время пользователя ======================
+# =================== Определяем пользователя и язык ======================
 def getuserid(nameid):
     conn = sqlite3.connect('userdata.sql')
     cur = conn.cursor()
@@ -75,6 +75,17 @@ def getuserid(nameid):
     conn.close()
     return userid
 
+def getlanguage(nameid):
+    conn = sqlite3.connect('userdata.sql')
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE pass=?", (nameid,))
+    existing_record = cur.fetchone()
+    if existing_record:
+        userlang = existing_record[-1]
+    cur.close()
+    conn.close()
+    return userlang
+
 # ============== Обработка запросов по командам Бота ========================
 @dp.message_handler(commands=['start'])
 async def main(message):
@@ -83,22 +94,26 @@ async def main(message):
     conn = sqlite3.connect('userdata.sql')                      # utc INTEGER
     cur = conn.cursor()
     cur.execute('CREATE TABLE IF NOT EXISTS users (id int auto_increment primary key, name varchar(50), '
-                'pass varchar(50), utc integer, alarm varchar(8))')
+                'pass varchar(50), utc integer, lang integer)')
     cur.execute("SELECT * FROM users WHERE name=? AND pass=?", (name, nameid))
     existing_record = cur.fetchone()
     if existing_record:
         await message.answer( "Welcome you again")
     else:
-        cur.execute("INSERT INTO users (name, pass, utc) VALUES (?, ?, ?)", (name, nameid, 1))
+        cur.execute("INSERT INTO users (name, pass, utc, lang) VALUES (?, ?, ?, ?)", (name, nameid, 1, 1))
         conn.commit()
         #bot.send_message(message.chat.id, "Запись успешно добавлена.")   .from_user.first_name
     cur.close()
     conn.close()
+    markup = types.InlineKeyboardMarkup()
+    btn1 = types.InlineKeyboardButton('🇬🇧 English', callback_data='Eng')
+    btn2 = types.InlineKeyboardButton('🇵🇱 Polish', callback_data='Pol')
+    markup.row(btn1, btn2)
     await message.answer(               f'  Hello, <b>{name}!</b> '
                                         f'\nWelcome to the Algo - Parents Bot'
                                         f'\nPlease enter the <b>student ID</b>'
                                         f'\nAnd choose your <b>language</b>'
-                                        ,parse_mode='html')
+                                        ,parse_mode='html', reply_markup=markup)
 
 @dp.message_handler(commands=['get_users'])
 async def allusers(message):
@@ -107,18 +122,19 @@ async def allusers(message):
     cur.execute('SELECT * FROM users')
     users = cur.fetchall()
     info = ''
-    for el in users: info += f'Name: {el[1]}, ID:{el[2]}, utc:{el[3]}\n'
+    for el in users: info += f'Name: {el[1]}, ID:{el[2]}, utc:{el[3]}, lang:{el[4]}\n'
     cur.execute("SELECT COUNT(*) FROM users")
     count = cur.fetchone()[0]
     cur.close()
     conn.close()
     await message.answer(f'{count}\n{info}')
 
-@dp.message_handler(commands=['get'])
-async def maintest(message, nameid=None):
+@dp.message_handler(commands=['getuser'])
+async def getuser(message, nameid=None):
     if nameid is None:
         nameid = message.from_user.id
     userid = getuserid(nameid)
+    userlang = getlanguage(nameid)
 
     # Создаем объект BeautifulSoup
     soup = BeautifulSoup(content, 'html.parser')
@@ -156,26 +172,43 @@ async def maintest(message, nameid=None):
             balance = int(cells[10].text)
             break  # Прерываем цикл, так как данные для User найдены
 
-    print("Имя:", name)
-    await message.answer(
-        f'<b><u>Basic information about the student :</u></b>'
-        f'\nName -  {name}'
-        f'\nLessons passed in group: -  {lessons_completed}'
-        f'\nGroup start: -  {start_date}'
-        #f'\nGroup type: -  {group_type}'
-        #f'\nStudent status in the group: -  {student_status}'
-        f'\nAttended lessons: -  {lessons_attended}'
-        f'\nMissed lessons: -  {lessons_missed}'
-        f'\nPaid: -  {paid}'
-        f'\nPaid for lessons: -  {lessons_paid}'
-        f'\nBalance: -  {balance}'
-        ,parse_mode='html')
+    print("Запрос для :", name)
+    if userlang == 1:
+        await message.answer(
+            f'<b><u>Basic information about the student :</u></b>'
+            f'\nName -  {name}'
+            f'\nLessons passed in group: -  {lessons_completed}'
+            f'\nGroup start: -  {start_date}'
+            #f'\nGroup type: -  {group_type}'
+            #f'\nStudent status in the group: -  {student_status}'
+            f'\nAttended lessons: -  {lessons_attended}'
+            f'\nMissed lessons: -  {lessons_missed}'
+            f'\nPaid: -  {paid}'
+            f'\nPaid for lessons: -  {lessons_paid}'
+            f'\nBalance: -  {balance}'
+            ,parse_mode='html')
+
+    if userlang == 2:
+        await message.answer(
+            f'<b><u>Podstawowe informacje o uczniu :</u></b>'
+            f'\nImię i nazwisko -  {name}'
+            f'\nLekcje zaliczone w grupie: -  {lessons_completed}'
+            f'\nPoczątek grupy: -  {start_date}'
+            #f'\nGroup type: -  {group_type}'
+            #f'\nStudent status in the group: -  {student_status}'
+            f'\nUczęszczane lekcje: -  {lessons_attended}'
+            f'\nNieodebrane lekcje: -  {lessons_missed}'
+            f'\nZapłacone: -  {paid}'
+            f'\nPłatne za lekcje: -  {lessons_paid}'
+            f'\nSaldo: -  {balance}'
+            ,parse_mode='html')
 
 @dp.message_handler(commands=['billinfo'])
-async def maintest(message, nameid=None):
+async def billinf(message, nameid=None):
     if nameid is None:
         nameid = message.from_user.id
     userid = getuserid(nameid)
+    userlang = getlanguage(nameid)
 
     # Создаем объект BeautifulSoup
     soup = BeautifulSoup(bill, 'html.parser')
@@ -208,27 +241,90 @@ async def maintest(message, nameid=None):
             # Добавляем найденные значения в список
             matching_values.append([field1, field2, field3, field4, field5])
 
-    print("Имя:", field4)
-    await message.answer('<b><u>Basic information about the student :</u></b>', parse_mode='html')
+    print("Запрос для :", field4)
+    if userlang == 1:
+        # Создаем переменную для объединения сообщения
+        output_message = '<b><u>Payment Information :</u></b>'
 
-    # Создаем переменную для объединения сообщения
-    output_message = '<b><u>Basic information about the student :</u></b>'
+        # Выводим найденные значения
+        for values in matching_values:
+            field1, field2, field3, field4, field5 = values
 
-    # Выводим найденные значения
-    for values in matching_values:
-        field1, field2, field3, field4, field5 = values
+            output_message += (
+                f'\nPayment date -  {field1}'
+                f'\nbilled for payment -  {field2}'
+                f'\nReceived -  {field3}'
+                # f'\nGroup type: -  {group_type}'
+                # f'\nStudent status in the group: -  {student_status}'
+                f'\nNumber of paid lessons -  {field5}'
+                f'\n----------'
+            )
 
-        output_message += (
-            f'\nName -  {field1}'
-            f'\nLessons passed in group: -  {field2}'
-            f'\nGroup start: -  {field3}'
-            # f'\nGroup type: -  {group_type}'
-            # f'\nStudent status in the group: -  {student_status}'
-            f'\nAttended lessons: -  {field5}'
-        )
+        # Отправляем одно сообщение с объединенными значениями
+        await message.answer(output_message, parse_mode='html')
 
-    # Отправляем одно сообщение с объединенными значениями
-    await message.answer(output_message, parse_mode='html')
+    if userlang == 2:
+        # Создаем переменную для объединения сообщения
+        output_message = '<b><u>Informacje o płatnościach :</u></b>'
+
+        # Выводим найденные значения
+        for values in matching_values:
+            field1, field2, field3, field4, field5 = values
+
+            output_message += (
+                f'\nTermin płatności -  {field1}'
+                f'\nDo zapłaty -  {field2}'
+                f'\nOtrzymany -  {field3}'
+                # f'\nGroup type: -  {group_type}'
+                # f'\nStudent status in the group: -  {student_status}'
+                f'\nLiczba płatnych lekcji -  {field5}'
+                f'\n----------'
+            )
+
+        # Отправляем одно сообщение с объединенными значениями
+        await message.answer(output_message, parse_mode='html')
+
+# ========================================================================================================
+#                       Обработка  Запросов  Callback
+# ========================================================================================================
+@dp.callback_query_handler()
+async def callback(call):
+
+    if call.data == 'Pol':
+        nameid = call.from_user.id
+        conn = sqlite3.connect('userdata.sql')
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE pass=?", (nameid,))
+        existing_record = cur.fetchone()
+        if existing_record:
+            # Обновляем запись в базе данных
+            cur.execute("UPDATE users SET lang = ? WHERE pass = ?", (2, nameid))
+            conn.commit()
+        cur.close()
+        conn.close()
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
+        btn1 = types.KeyboardButton('Informacje o studencie')
+        btn2 = types.KeyboardButton('Informacje o płatnościach')
+        markup.row(btn1, btn2)
+        await bot.send_message(call.message.chat.id, f'Wybrałeś język polski', reply_markup=markup)
+
+    elif call.data == 'Eng':
+        nameid = call.from_user.id
+        conn = sqlite3.connect('userdata.sql')
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE pass=?", (nameid,))
+        existing_record = cur.fetchone()
+        if existing_record:
+            # Обновляем запись в базе данных
+            cur.execute("UPDATE users SET lang = ? WHERE pass = ?", (1, nameid))
+            conn.commit()
+        cur.close()
+        conn.close()
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
+        btn1 = types.KeyboardButton('User Infirmation')
+        btn2 = types.KeyboardButton('Bill Infirmation')
+        markup.row(btn1, btn2)
+        await bot.send_message(call.message.chat.id, f'You have chosen English', reply_markup=markup)
 
 
 #============================ Запись запроса в базу по номеру =========================
@@ -250,9 +346,22 @@ async def fordate(message):
         cur.close()
         conn.close()
         await message.answer(f'Great, you entered : \n{userid}', parse_mode='html')
+
+    elif userid == 'user infirmation' or userid == 'bill infirmation':
+        if userid == 'user infirmation': await getuser(message, nameid)
+        if userid == 'bill infirmation': await billinf(message, nameid)
+        await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+
+    elif userid == 'informacje o studencie' or userid == 'informacje o płatnościach':
+        if userid == 'informacje o studencie': await getuser(message, nameid)
+        if userid == 'informacje o płatnościach': await billinf(message, nameid)
+        await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+
     else:
         # Ввод содержит другие символы, кроме цифр
-        await bot.send_message(message.chat.id, 'Student ID was entered incorrectly. Enter only numbers.')
+        await bot.send_message(message.chat.id, f'Student ID was entered incorrectly. Enter only numbers.'
+                            f'\n----------'                    
+                            f'\nIdentyfikator ucznia został wprowadzony nieprawidłowo. Należy wprowadzić tylko cyfry')
 
 
 # file_handler.close()
