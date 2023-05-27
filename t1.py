@@ -1,18 +1,31 @@
 from aiogram import Bot, Dispatcher, executor, types
 import datetime
-import time
 import requests
 import sqlite3
-from bs4 import BeautifulSoup, Comment
+from bs4 import BeautifulSoup
 from apscheduler.schedulers.background import BackgroundScheduler
-import subprocess
 import os
-import sys
 import logging
-from logging.handlers import RotatingFileHandler
 
 bot = Bot('5838878828:AAFVtAnF6732ccUcjG8DnFWddZKTMvM74Fo')
 dp = Dispatcher(bot)
+
+# Создаем логгер и задаем уровень логирования
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+
+# Создаем обработчик для записи в файл
+file_path = os.path.join('db', 'log.txt')
+file_handler = logging.FileHandler(file_path, encoding='utf-8')
+file_handler.setLevel(logging.DEBUG)
+
+# Создаем форматер для сообщений
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
+
+# Добавляем обработчик в логгер
+logger.addHandler(file_handler)
+
 
 scheduler = BackgroundScheduler()
 content = ''
@@ -44,28 +57,39 @@ def GetContent():
     if response.status_code == 200:
         # Обработка ответа
         content = response.text
-        print(content)
+        logger.debug('=========================================================================')
+        logger.debug(content)
+        logger.debug(f'{datetime.datetime.now()} uploaded User information')
+        logger.debug('=========================================================================')
+        #print(content)
     else:
         # Обработка ошибки
-        print('Ошибка при выполнении запроса')
+        logger.debug('Request execution error')
+        #print('Ошибка при выполнении запроса')
 
     # Проверка успешного выполнения запроса
     if response1.status_code == 200:
         # Обработка ответа
         bill = response1.text
-        print(bill)
+        logger.debug(bill)
+        logger.debug(f'{datetime.datetime.now()} uploaded Bill information')
+        logger.debug('=========================================================================')
+        #print(bill)
     else:
         # Обработка ошибки
-        print('Ошибка при выполнении запроса')
+        logger.debug('Request execution error')
+        #print('Ошибка при выполнении запроса')
 
-GetContent()
-# scheduler.add_job(GetContent, 'cron', hour=14, minute=31, second=10)
-#
-# scheduler.start()
+
+# GetContent()
+scheduler.add_job(GetContent, 'cron', hour=6, minute=28, second=10)
+
+scheduler.start()
 
 # =================== Определяем пользователя и язык ======================
 def getuserid(nameid):
-    conn = sqlite3.connect('userdata.sql')
+    db_path = os.path.join("db", "userdata.sql")
+    conn = sqlite3.connect(db_path)
     cur = conn.cursor()
     cur.execute("SELECT * FROM users WHERE pass=?", (nameid,))
     existing_record = cur.fetchone()
@@ -76,7 +100,8 @@ def getuserid(nameid):
     return userid
 
 def getlanguage(nameid):
-    conn = sqlite3.connect('userdata.sql')
+    db_path = os.path.join("db", "userdata.sql")
+    conn = sqlite3.connect(db_path)
     cur = conn.cursor()
     cur.execute("SELECT * FROM users WHERE pass=?", (nameid,))
     existing_record = cur.fetchone()
@@ -89,9 +114,10 @@ def getlanguage(nameid):
 # ============== Обработка запросов по командам Бота ========================
 @dp.message_handler(commands=['start'])
 async def main(message):
+    db_path = os.path.join("db", "userdata.sql")
     name = message.from_user.first_name
     nameid = message.from_user.id
-    conn = sqlite3.connect('userdata.sql')                      # utc INTEGER
+    conn = sqlite3.connect(db_path)                      # utc INTEGER
     cur = conn.cursor()
     cur.execute('CREATE TABLE IF NOT EXISTS users (id int auto_increment primary key, name varchar(50), '
                 'pass varchar(50), utc integer, lang integer)')
@@ -102,7 +128,8 @@ async def main(message):
     else:
         cur.execute("INSERT INTO users (name, pass, utc, lang) VALUES (?, ?, ?, ?)", (name, nameid, 1, 1))
         conn.commit()
-        #bot.send_message(message.chat.id, "Запись успешно добавлена.")   .from_user.first_name
+        logger.debug(f'User {nameid} has connected to the database')
+        logger.debug('=========================================================================')
     cur.close()
     conn.close()
     markup = types.InlineKeyboardMarkup()
@@ -121,7 +148,8 @@ async def main(message):
 
 @dp.message_handler(commands=['get_users'])
 async def allusers(message):
-    conn = sqlite3.connect('userdata.sql')
+    db_path = os.path.join("db", "userdata.sql")
+    conn = sqlite3.connect(db_path)
     cur = conn.cursor()
     cur.execute('SELECT * FROM users')
     users = cur.fetchall()
@@ -245,7 +273,6 @@ async def billinf(message, nameid=None):
             # Добавляем найденные значения в список
             matching_values.append([field1, field2, field3, field4, field5])
 
-    print("Запрос для :", field4)
     if userlang == 1:
         # Создаем переменную для объединения сообщения
         output_message = '<b><u>Payment Information :</u></b>'
@@ -295,8 +322,9 @@ async def billinf(message, nameid=None):
 async def callback(call):
 
     if call.data == 'Pol':
+        db_path = os.path.join("db", "userdata.sql")
+        conn = sqlite3.connect(db_path)
         nameid = call.from_user.id
-        conn = sqlite3.connect('userdata.sql')
         cur = conn.cursor()
         cur.execute("SELECT * FROM users WHERE pass=?", (nameid,))
         existing_record = cur.fetchone()
@@ -313,8 +341,9 @@ async def callback(call):
         await bot.send_message(call.message.chat.id, f'Wybrałeś język polski', reply_markup=markup)
 
     elif call.data == 'Eng':
+        db_path = os.path.join("db", "userdata.sql")
+        conn = sqlite3.connect(db_path)
         nameid = call.from_user.id
-        conn = sqlite3.connect('userdata.sql')
         cur = conn.cursor()
         cur.execute("SELECT * FROM users WHERE pass=?", (nameid,))
         existing_record = cur.fetchone()
@@ -347,14 +376,12 @@ async def fordate(message):
             if userid == int(cells[0].text):
                 name = cells[1].text
                 break
-        print(name)
-        print(userid)
-
         if name == '':
             await message.answer(f'Student - {userid} - not found', parse_mode='html')
         else:
         #---------------------------
-            conn = sqlite3.connect('userdata.sql')
+            db_path = os.path.join("db", "userdata.sql")
+            conn = sqlite3.connect(db_path)
             cur = conn.cursor()
             cur.execute("SELECT * FROM users WHERE pass=?", (nameid,))
             existing_record = cur.fetchone()
@@ -366,7 +393,9 @@ async def fordate(message):
                 cur.execute("SELECT utc FROM users WHERE pass=?", (nameid,))
             cur.close()
             conn.close()
-            print(userid)
+            #print(userid)
+            logger.debug(f'User {name} added to the database')
+            logger.debug('=========================================================================')
             await message.answer(f'Information on <b>{name}</b>', parse_mode='html')
 
     elif userid == 'user information' or userid == 'bill information':
@@ -385,5 +414,9 @@ async def fordate(message):
                             f'\n----------'                    
                             f'\nIdentyfikator ucznia został wprowadzony nieprawidłowo. Należy wprowadzić tylko cyfry')
 
-# file_handler.close()
+
+if __name__ == '__main__':
+    GetContent()
+
+file_handler.close()
 executor.start_polling(dp)
